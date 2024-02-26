@@ -1,5 +1,6 @@
 import random
 from aiogram import Bot, Dispatcher, F
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -12,7 +13,7 @@ bot = Bot(token=bot_token)
 dp = Dispatcher()
 
 create_tables(engine)
-
+variable_storage = MemoryStorage()
 
 print('Start telegram bot...')
 
@@ -133,7 +134,7 @@ async def next_question(callback: CallbackQuery, state: FSMContext):
     rand_words = WorkingForDictionary.random_of_lexicon()
     right_choice = random.choice(rand_words)
     await interface_choice(rand_words, right_choice, callback)
-    await state.set_state({'rand_words': rand_words, 'right_choice': right_choice, 'status': status})
+    await state.set_state({'rand_words': rand_words, 'right_choice': right_choice, 'status': status.get('status')})
 
 
 @dp.callback_query(F.data.in_({'but_1', 'but_2', 'but_3', 'but_4'}))
@@ -220,8 +221,6 @@ async def command_start(message: Message):
                  'Если хотите изучить новые слова, нажмите "Начать изучение 👨‍🏫"\n'
                  'Или нажмите "Редактировать словарь ✍️" для добавления новых слов\n\n',
             reply_markup=keyboard)
-
-
 
 
 if __name__ == '__main__':
